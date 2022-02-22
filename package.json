@@ -10,7 +10,7 @@
     "typescript": "^4.5.5"
   },
   "scripts": {
-    "blocks": "ts-node ./scripts/blocks.ts",
+    "events": "ts-node ./scripts/blocks.ts",
     "prettier:fix": "prettier --write 'scripts/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
