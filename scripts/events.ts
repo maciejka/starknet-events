@@ -34,29 +34,28 @@ type TransactionSummary = Transaction & {
   receipt: TransactionReceipt;
 };
 
-function summary(
-  transaction: Transaction,
-  receipt: TransactionReceipt,
-  extra: Partial<TransactionSummary> = {}
-): TransactionSummary {
-  return { ...transaction, receipt, ...extra } as TransactionSummary;
-}
-
 function transactionsFromBlock(b: Block): Array<TransactionSummary> {
-  return zip(b.transactions, b.transaction_receipts).map(([t, r]) =>
-    summary(t, r, { parent_block_hash: b.parent_block_hash })
+  return zip(b.transactions, b.transaction_receipts).map(
+    ([transaction, receipt]) => ({
+      ...transaction,
+      receipt,
+      parent_block_hash: b.parent_block_hash,
+    })
   );
 }
 
 function eventsFromTransaction({
   block_hash,
   transaction_hash,
+  parent_block_hash,
   receipt: { transaction_index, events },
 }: TransactionSummary): Array<Event> {
   return events.map((e, i) => ({
     block_hash,
+    parent_block_hash,
     transaction_hash,
     transaction_index,
+    log_index: i,
     ...e,
   }));
 }
@@ -85,7 +84,4 @@ function events(server: string, period = 10000) {
 const alphaGoerli = "alpha4.starknet.io";
 const alphaMainet = "alpha-mainnet.starknet.io";
 
-// pendingTransactions(alphaMainet)
-events(alphaGoerli, 1000)
-  .pipe(tap((b) => console.log(b)))
-  .subscribe();
+events(alphaGoerli, 1000).pipe(tap(console.log)).subscribe();
